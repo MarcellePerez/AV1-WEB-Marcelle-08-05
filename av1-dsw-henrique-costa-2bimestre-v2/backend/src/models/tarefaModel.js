@@ -1,40 +1,56 @@
-import { PrismaClient } from '@prisma/client';
+// ========================================
+// MODEL - CAMADA DE DADOS COM PRISMA
+// ========================================
+// Esta camada é responsável por:
+// - Realizar operações CRUD no banco de dados usando Prisma
+// - Implementar a lógica de negócio
 
-const prisma = new PrismaClient();
+import { prisma } from "../config/prisma.js";
 
-export async function obterTodasTarefas() {
-  return await prisma.task.findMany();
+/**
+ * Cria uma nova task usando Prisma
+ * @param {string} title - Título da tarefa
+ * @param {string} description - Descrição da tarefa (opcional)
+ * @param {number} categoryId - ID da categoria (opcional)
+ * @returns {Promise<Object>} - A tarefa criada
+ */
+export async function criarTask(title, description = null, categoryId = null) {
+  const novaTask = await prisma.task.create({
+    data: {
+      title: title.trim(),
+      description: description ? description.trim() : null,
+      categoryId: categoryId
+    },
+    include: {
+      category: true
+    }
+  });
+
+  return novaTask;
 }
 
-export async function obterTarefaPorId(id) {
-  return await prisma.task.findUnique({ where: { id } });
-}
-
-export async function criarNovaTarefa(descricao) {
-  const data = {
-    title: descricao.trim(),
-    description: '',
-    completed: false
-  };
-  return await prisma.task.create({ data });
-}
-
-export async function atualizarTarefa(id, novaDescricao, novoStatus) {
-  const data = {};
-  if (novaDescricao !== undefined) data.title = novaDescricao.trim();
-  if (novoStatus !== undefined) data.completed = novoStatus;
-
+/**
+ * Exclui uma task pelo id usando Prisma
+ * @param {number} id - ID da task a ser excluída
+ * @returns {Promise<Object|null>} - A task removida ou null se não encontrar
+ */
+export async function excluirTask(id) {
   try {
-    return await prisma.task.update({ where: { id }, data });
-  } catch (e) {
-    return null;
-  }
-}
+    const taskRemovida = await prisma.task.delete({
+      where: {
+        id: id
+      },
+      include: {
+        category: true
+      }
+    });
 
-export async function excluirTarefa(id) {
-  try {
-    return await prisma.task.delete({ where: { id } });
-  } catch (e) {
-    return null;
+    return taskRemovida;
+  } catch (error) {
+    // Se o registro não for encontrado, retorna null
+    if (error.code === "P2025") {
+      return null;
+    }
+    throw error;
   }
 }
