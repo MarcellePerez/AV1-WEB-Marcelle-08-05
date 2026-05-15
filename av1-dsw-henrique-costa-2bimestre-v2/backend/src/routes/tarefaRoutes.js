@@ -13,33 +13,43 @@ import * as TarefaController from "../controllers/tarefaController.js";
 const router = express.Router();
 
 // ========================================
-// DEFINIÇÃO DAS ROTAS DE TAREFAS
+// DEFINIÇÃO DAS ROTAS REST DE TAREFAS
 // ========================================
 
 /**
  * GET /tarefas - Lista todas as tarefas
+ * @returns {Array} Lista de tarefas
  */
-router.get("/tarefas", TarefaController.listarTarefas);
+router.get("/tarefas", TarefaController.listar);
 
 /**
- * GET /tarefas/:id - Obtém uma tarefa específica
+ * GET /tarefas/:id - Obtém uma tarefa específica por ID
+ * @param {number} id - ID da tarefa
+ * @returns {Object} Tarefa encontrada ou erro 404
  */
-router.get("/tarefas/:id", TarefaController.obterTarefa);
+router.get("/tarefas/:id", TarefaController.buscarPorId);
 
 /**
  * POST /tarefas - Cria uma nova tarefa
+ * @body {Object} title (obrigatório), description, completed, categoryId
+ * @returns {Object} Tarefa criada com status 201
  */
-router.post("/tarefas", TarefaController.criarTarefa);
+router.post("/tarefas", TarefaController.criar);
 
 /**
- * PATCH /tarefas/:id - Atualiza uma tarefa parcialmente
+ * PUT /tarefas/:id - Atualiza uma tarefa completamente ou parcialmente
+ * @param {number} id - ID da tarefa
+ * @body {Object} Campos a atualizar: title, description, completed, categoryId
+ * @returns {Object} Tarefa atualizada ou erro 404
  */
-router.patch("/tarefas/:id", TarefaController.atualizarTarefa);
+router.put("/tarefas/:id", TarefaController.atualizar);
 
 /**
  * DELETE /tarefas/:id - Remove uma tarefa
+ * @param {number} id - ID da tarefa
+ * @returns {Object} Tarefa removida ou erro 404
  */
-router.delete("/tarefas/:id", TarefaController.excluirTarefa);
+router.delete("/tarefas/:id", TarefaController.excluir);
 
 // Exporta o roteador para ser usado no app principal
 export default router;
