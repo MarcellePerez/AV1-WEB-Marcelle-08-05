@@ -8,6 +8,7 @@
 // - Preparar a aplicação para ser exportada
 
 import express from "express";
+import cors from "cors";
 import tarefaRoutes from "./routes/tarefaRoutes.js";
 
 // Cria a aplicação Express
@@ -16,6 +17,9 @@ const app = express();
 // ========================================
 // MIDDLEWARES
 // ========================================
+
+// Habilita CORS para aceitar requisições do frontend
+app.use(cors());
 
 // Permite que o servidor entenda JSON enviado no corpo da requisição
 app.use(express.json());
